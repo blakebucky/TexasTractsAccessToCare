@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title> Texas Census Tract Spatial Accessibility to Healthcare </title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+    body {
+  margin: 0;
+  padding: 0;
+}
+
+h2,
+h3 {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+p {
+  font-size: 0.85em;
+  margin: 10px;
+  text-align: left;
+}
+
+/**
+* Create a position for the map
+* on the page */
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+/**
+* Set rules for how the map overlays
+* (information box and legend) will be displayed
+* on the page. */
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 10;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+}
+
+#features {
+  top: 0;
+  height: 100px;
+  margin-top: 20px;
+  width: 250px;
+}
+
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  height: 180px;
+  margin-bottom: 40px;
+  width: 140px;
+}
+
+.legend-key {
+  display: inline-block;
+  border-radius: 20%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
+</style>
+  </head>
+  <body>
+    <div class='map-overlay' id='features'><h2>Texas Census Tract Access to Healthcare</h2><div id='pd'><p>Hover over a tract!</p></div></div>
+    <div class='map-overlay' id='legend'></div>
+<div id='map'>
+  <script>
+
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYmxha2VidWNreSIsImEiOiJjanZ5dGpwdDIwamk0NDNtdTBoMHlucGNwIn0.WnL-JNsEAVK7MVn_ehWOmA';
+
+  var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/blakebucky/ck41xctag0pzt1cp7xkbh6cjq',
+    center: [-99, 31.96],
+    minZoom: 7,
+    zoom: 7
+});
+
+    map.on('load', function() {
+
+      map.getCanvas().style.cursor = 'default';
+
+      console.log(map.getSource('composite').vectorLayerIds);
+
+      var layers = ['0-2.71', '2.72-7.62', '7.63-12.95', '12.96-18.92', '18.93-28.44', '28.45-39.36', '39.37-53.99', '54.00-88.24','88.25-130.31','130.32-30352.18'];
+      var colors = ['#EF5450', '#EA613C', '#E17028', '#D57F12', '#C58D00', '#B39900', '#9FA400', '#87AE1F', '#6BB73A', '#45BF55'];
+
+      for (i = 0; i < layers.length; i++) {
+        var layer = layers[i];
+        var color = colors[i];
+        var item = document.createElement('div');
+        var key = document.createElement('span');
+        key.className = 'legend-key';
+        key.style.backgroundColor = color;
+
+        var value = document.createElement('span');
+        value.innerHTML = layer;
+        item.appendChild(key);
+        item.appendChild(value);
+        legend.appendChild(item);
+      }
+
+map.on('mousemove', function(e) {
+  var tracts = map.queryRenderedFeatures(e.point, {
+    layers: ['texastracts']
+  });
+
+  if (tracts.length > 0) {
+    document.getElementById('pd').innerHTML =  '</strong></h3><p><strong><em>' + tracts[0].properties.PTP_100 + '</strong> providers per 100 people</em></p>';
+  } else {
+    document.getElementById('pd').innerHTML = '<p>Hover over a tract!</p>';
+  }
+});
+});
+  </script>
+</div>
+</html>
